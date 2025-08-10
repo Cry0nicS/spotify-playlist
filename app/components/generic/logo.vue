@@ -18,7 +18,9 @@ const {size = 50} = defineProps<LogoProps>();
 </script>
 
 <template>
-    <NuxtLink to="/" aria-label="Home">
+    <NuxtLink
+        to="/"
+        aria-label="Home">
         <svg
             :height="size"
             :width="size"
