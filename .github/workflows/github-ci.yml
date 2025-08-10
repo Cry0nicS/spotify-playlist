@@ -1,0 +1,50 @@
+jobs:
+    setup:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22.16.0
+                  cache: npm
+                  cache-dependency-path: package-lock.json
+            - run: npm ci --no-audit --no-fund
+
+    lint:
+        needs: setup
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22.16.0
+                  cache: npm
+                  cache-dependency-path: package-lock.json
+            - run: npm ci --no-audit --no-fund
+            - run: npm run lint
+
+    format-check:
+        needs: setup
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22.16.0
+                  cache: npm
+                  cache-dependency-path: package-lock.json
+            - run: npm ci --no-audit --no-fund
+            - run: npm run format-check
+
+    build:
+        needs: [lint, format-check]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22.16.0
+                  cache: npm
+                  cache-dependency-path: package-lock.json
+            - run: npm ci --no-audit --no-fund
+            - run: npm run build
