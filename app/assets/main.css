@@ -1,121 +1,142 @@
-@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Nunito:wght@700;800&display=swap");
 @import "@nuxt/ui";
+@import "tailwindcss";
 
-/*
-  Use the @theme directive to define and extend your theme.
-  This is the new v4 replacement for the theme object in your config file.
-*/
-@theme {
-    /*
-      Define all your color palettes as CSS custom properties.
-      The structure --color-{name}-{shade} is a common convention.
-    */
-    --color-scale: #fafaf5;
-    --color-white: #ffffff;
-    --color-black: #000000;
-
-    --color-gray-50: #f9fafb;
-    --color-gray-100: #f3f4f6;
-    --color-gray-200: #e5e7eb;
-    --color-gray-300: #d1d5db;
-    --color-gray-400: #9ca3af;
-    --color-gray-500: #6b7280;
-    --color-gray-600: #4b5563;
-    --color-gray-700: #374151;
-    --color-gray-800: #1f2a37;
-    --color-gray-900: #111928;
-
-    --color-peppermint-50: #eaf8f8;
-    --color-peppermint-100: #def8f8;
-    --color-peppermint-200: #d2f2f0;
-    --color-peppermint-300: #b8e2e2;
-    --color-peppermint-400: #569f9f;
-    --color-peppermint-500: #1b6b6b;
-    --color-peppermint-600: #16595b;
-    --color-peppermint-700: #004d4d;
-    --color-peppermint-800: #113a3a;
-    --color-peppermint-900: #092526;
-
-    --color-bright-50: #f1f9fc;
-    --color-bright-100: #dff4fb;
-    --color-bright-200: #d1eaf2;
-    --color-bright-300: #a6d8e9;
-    --color-bright-400: #71c4df;
-    --color-bright-500: #55b2d3;
-    --color-bright-600: #3e9abc;
-    --color-bright-700: #3882a1;
-    --color-bright-800: #186789;
-    --color-bright-900: #19485b;
-
-    --color-green-50: #f3faf7;
-    --color-green-100: #def7ec;
-    --color-green-200: #bcf0da;
-    --color-green-300: #84e1bc;
-    --color-green-400: #31c48d;
-    --color-green-500: #0e9f6e;
-    --color-green-600: #057a55;
-    --color-green-700: #046c4e;
-    --color-green-800: #03543f;
-    --color-green-900: #014737;
-
-    --color-red-50: #fcf0f0;
-    --color-red-100: #fae3e1;
-    --color-red-200: #f4b9b3;
-    --color-red-300: #e87065;
-    --color-red-400: #db1c0b;
-    --color-red-500: #bf180a;
-    --color-red-600: #a41508;
-    --color-red-700: #831107;
-    --color-red-800: #630d05;
-    --color-red-900: #4d0a04;
-
-    --color-orange-50: #fff8f1;
-    --color-orange-100: #feeedc;
-    --color-orange-200: #fcdebd;
-    --color-orange-300: #fdc68c;
-    --color-orange-400: #ff992e;
-    --color-orange-500: #f08411;
-    --color-orange-600: #d06c01;
-    --color-orange-700: #b45e03;
-    --color-orange-800: #904e08;
-    --color-orange-900: #683907;
-
-    --color-yellow-50: #fdfcea;
-    --color-yellow-100: #fdf8b2;
-    --color-yellow-200: #f6ee73;
-    --color-yellow-300: #f1e000;
-    --color-yellow-400: #e3c920;
-    --color-yellow-500: #c2a203;
-    --color-yellow-600: #9f860a;
-    --color-yellow-700: #8c7412;
-    --color-yellow-800: #725f13;
-    --color-yellow-900: #624c05;
-
-    /*
-      Define your color aliases here.
-      This makes it easy to reference your primary theme colors.
-      Tailwind will generate utilities like `bg-main-peppermint`, `text-main-bright`, etc.
-    */
-    --color-main-peppermint: var(--color-peppermint-700);
-    --color-main-bright: var(--color-bright-200);
-    --color-main-orange: var(--color-orange-200);
-    --color-main-lemon: var(--color-yellow-200);
-    --color-main-scale: var(--color-scale);
-
-    /*
-      Extend or override specific theme values.
-      This is the equivalent of the `theme.extend` object.
-    */
-    --color-text-brand: var(--color-peppermint-800);
-    --color-text-primary: var(--color-gray-900);
-    --color-text-secondary: var(--color-gray-700);
-    /* text-white and text-black are already defined by default */
+:root {
+    /* Light theme - Vibrant Music Theme */
+    --bg-main: #f8fafc;
+    --bg-secondary: #e2e8f0;
+    --text-main: #0f172a;
+    --text-secondary: #475569;
+    --accent: #1db954; /* Spotify Green */
+    --accent-secondary: #8b5cf6; /* Purple for AI features */
+    --accent-tertiary: #f59e0b; /* Amber for highlights */
+    --border: #cbd5e1;
+    --gradient-start: #1db954;
+    --gradient-end: #1ed760;
 }
 
-/*
-  Generate utility classes for both the custom "main" color aliases (e.g. bg-main-peppermint)
-  and the full color palettes (e.g. text-peppermint-500, bg-orange-200),
-  so Tailwind includes them in the final CSS even if they aren't explicitly used in the markup.
-*/
-@source inline('{dark:,}{bg,text,stroke,fill}-main-{peppermint,bright,orange,lemon,scale}');
-@source inline('{dark:,}{bg,text,stroke,fill}-{peppermint,bright,orange,lemon,scale}{-50,-100,-200,-300,-400,-500,-600,-700,-800,-900}');
+.dark {
+    /* Dark theme - Modern Music Studio */
+    --bg-main: #1a1a1a;
+    --bg-secondary: #2a2a2a;
+    --text-main: #ffffff;
+    --text-secondary: #a1a1aa;
+    --accent: #1ed760; /* Brighter Spotify Green for dark */
+    --accent-secondary: #a855f7; /* Vibrant Purple */
+    --accent-tertiary: #fbbf24; /* Bright Amber */
+    --border: #3a3a3a;
+    --gradient-start: #1ed760;
+    --gradient-end: #22c55e;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: "Inter", system-ui, sans-serif;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Nunito", system-ui, sans-serif;
+    font-weight: 700;
+}
+
+/* Custom utility classes */
+.bg-main {
+    background-color: var(--bg-main);
+}
+.bg-secondary {
+    background-color: var(--bg-secondary);
+}
+.text-main {
+    color: var(--text-main);
+}
+.text-secondary {
+    color: var(--text-secondary);
+}
+.accent {
+    color: var(--accent);
+}
+.accent-bg {
+    background-color: var(--accent);
+}
+.accent-secondary {
+    color: var(--accent-secondary);
+}
+.accent-secondary-bg {
+    background-color: var(--accent-secondary);
+}
+.accent-tertiary {
+    color: var(--accent-tertiary);
+}
+.accent-tertiary-bg {
+    background-color: var(--accent-tertiary);
+}
+.border-main {
+    border-color: var(--border);
+}
+
+/* Music-inspired gradient backgrounds */
+.gradient-spotify {
+    background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+}
+
+.gradient-ai {
+    background: linear-gradient(135deg, var(--accent-secondary) 0%, #ec4899 100%);
+}
+
+/* Enhanced focus states */
+:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    transition: outline 0.2s ease;
+}
+
+/* Smooth transitions for interactive elements */
+button,
+.interactive {
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+/* Music visualization inspired elements */
+.pulse-music {
+    animation: pulse-music 2s ease-in-out infinite;
+}
+
+@keyframes pulse-music {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Card hover effects for playlist items */
+.playlist-card {
+    transition: all 0.3s ease;
+    border: 1px solid var(--border);
+}
+
+.playlist-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(29, 185, 84, 0.15);
+    border-color: var(--accent);
+}
+
+.dark .playlist-card:hover {
+    box-shadow: 0 10px 25px rgba(30, 215, 96, 0.2);
+}
