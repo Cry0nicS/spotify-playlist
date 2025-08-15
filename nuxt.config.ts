@@ -7,6 +7,12 @@ export default defineNuxtConfig({
             standalone: false // <--- Required for Antfu ESLint config.
         }
     },
+    fonts: {
+        families: [
+            {name: "Inter", provider: "google", weights: [400, 500, 700]},
+            {name: "Nunito", provider: "google", weights: [700, 800]}
+        ]
+    },
     modules: ["@nuxt/eslint", "@nuxt/ui"],
     runtimeConfig: {
         public: {
