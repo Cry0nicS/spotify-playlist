@@ -15,7 +15,10 @@ export const envVarsSchema = z.object({
         z.boolean().default(false)
     ),
     ROLLBAR_SERVER_TOKEN: z.string().min(1).optional(),
-    NUXT_PUBLIC_ROLLBAR_CLIENT_TOKEN: z.string().min(1).optional()
+    NUXT_PUBLIC_ROLLBAR_CLIENT_TOKEN: z.string().min(1).optional(),
+    SPOTIFY_BASE_URL: z.url(),
+    SPOTIFY_CLIENT_ID: z.string().min(1),
+    SPOTIFY_CLIENT_SECRET: z.string().min(1)
 });
 
 export type EnvVars = z.infer<typeof envVarsSchema>;
