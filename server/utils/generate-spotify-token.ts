@@ -1,17 +1,7 @@
-/**
- * Generates a Spotify API token using client credentials.
- * Caches the token until it is close to expiry.
- */
+import type {SpotifyAuthResponse} from "#shared/utils/types";
 import {Buffer} from "node:buffer";
 import {getEnvVars} from "#shared/utils/env-vars";
-import z from "zod";
-
-const SpotifyAuthResponseSchema = z.object({
-    access_token: z.string().min(1),
-    token_type: z.literal("Bearer"), // Spotify returns "Bearer"
-    expires_in: z.number().int().positive()
-});
-type SpotifyAuthResponse = z.infer<typeof SpotifyAuthResponseSchema>;
+import {SpotifyAuthResponseSchema} from "#shared/utils/schemas";
 
 type CachedToken = {
     token: string;
@@ -22,6 +12,10 @@ let cache: CachedToken | null = null;
 
 const LEEWAY_SECONDS = 30; // refresh just before expiry for safety
 
+/**
+ * Generates a Spotify API token using client credentials.
+ * Caches the token until it is close to expiry.
+ */
 export async function generateSpotifyToken(): Promise<string> {
     const now = Date.now();
 

@@ -1,43 +1,7 @@
 <script setup lang="ts">
-import {SPOTIFY_PLAYLIST_ID_REGEX} from "#shared/utils/constants";
+import type {PlaylistInfoResponse, PlaylistTracksResponse, TrackLine} from "#shared/utils/types";
+import {SpotifyPlaylistSchema} from "#shared/utils/schemas";
 import {ref} from "vue";
-import z from "zod";
-
-const spotifyPlaylistSchema = z.union(
-    [
-        // Plain 22-character playlist ID
-        z.string().regex(SPOTIFY_PLAYLIST_ID_REGEX, "Invalid Spotify playlist ID"),
-
-        // Strict Spotify playlist URL
-        z
-            .url({
-                protocol: /^https$/,
-                hostname: /^open\.spotify\.com$/
-            })
-            .refine((urlStr) => {
-                try {
-                    const url = new URL(urlStr); // create URL object
-                    return /^\/playlist\/[0-9A-Za-z]{22}\/?$/u.test(url.pathname);
-                } catch {
-                    return false;
-                }
-            }, "Must be a Spotify playlist URL like https://open.spotify.com/playlist/{id}")
-            .transform((urlStr) => {
-                const url = new URL(urlStr);
-                return url.pathname.split("/")[2]; // extract the ID
-            })
-    ],
-    {
-        error: () => ({
-            message:
-                "Enter a Spotify playlist URL (https://open.spotify.com/playlist/{id}) or a 22-character playlist ID."
-        })
-    }
-);
-
-const formSchema = z.object({
-    spotifyPlaylist: spotifyPlaylistSchema
-});
 
 const isLoading = ref(false);
 const errorMsg = ref("");
@@ -46,24 +10,30 @@ const formState = reactive({
     spotifyPlaylist: ""
 });
 
-interface TrackLine {
-    artist: string;
-    song: string;
-}
 const tracks = ref<TrackLine[]>([]);
+const playlistInfo = ref<PlaylistInfoResponse | null>(null);
 const copying = ref(false);
+const largestImage = ref<{height: number; url: string; width: number} | null>(null);
 
 // Resets the form data to initial state.
 const resetFormData = () => {
     formState.spotifyPlaylist = "";
 };
 
+const getLargestImage = (
+    images: {height: number; url: string; width: number}[]
+): {height: number; url: string; width: number} => {
+    return images.reduce((max, img) => (img.height > max.height ? img : max));
+};
+
+// Validate the playlist input using the shared schema directly
 const validateForm = (): {success: true; id: string} | {success: false; error: string} => {
-    const result = formSchema.safeParse(formState);
+    const result = SpotifyPlaylistSchema.safeParse(formState.spotifyPlaylist);
     if (!result.success) {
         return {success: false, error: result.error.issues.pop()?.message ?? result.error.message};
     }
-    return {success: true, id: result.data.spotifyPlaylist!};
+    // result.data is always the playlist ID (string)
+    return {success: true, id: result.data!};
 };
 
 const parsePlaylist = async () => {
@@ -80,12 +50,23 @@ const parsePlaylist = async () => {
     }
 
     try {
-        const result = await $fetch<TrackLine[]>("/api/spotify/playlist", {
+        const playlistInfoData = await $fetch<PlaylistInfoResponse>("/api/spotify/playlist-info", {
             method: "GET",
             query: {playlistId: validation.id}
         });
 
-        tracks.value = result ?? [];
+        playlistInfo.value = playlistInfoData;
+        largestImage.value = getLargestImage(playlistInfoData.images);
+
+        const playlistTracksData = await $fetch<PlaylistTracksResponse>(
+            "/api/spotify/playlist-tracks",
+            {
+                method: "GET",
+                query: {playlistId: validation.id}
+            }
+        );
+
+        tracks.value = playlistTracksData.tracks ?? [];
 
         // On success, reset the form data.
         resetFormData();
@@ -105,7 +86,7 @@ async function copyAll() {
 </script>
 
 <template>
-    <div class="mx-auto max-w-2xl space-y-6 p-6">
+    <div class="w-full space-y-6 p-6">
         <UCard class="playlist-card bg-secondary border-main mb-8">
             <template #header>
                 <div class="flex items-center justify-center gap-3">
@@ -165,6 +146,36 @@ async function copyAll() {
                 :avatar="{
                     src: '/favicon.ico'
                 }" />
+
+            <UCard
+                v-if="playlistInfo"
+                class="mx-auto max-w-sm overflow-hidden rounded-xl border border-gray-700 bg-gray-800/80 shadow-lg dark:bg-gray-800">
+                <div class="flex flex-col items-center p-5 text-center">
+                    <img
+                        v-if="largestImage"
+                        :src="largestImage.url"
+                        :alt="playlistInfo.name"
+                        :width="largestImage.width"
+                        :height="largestImage.height"
+                        class="mb-4 rounded-4xl object-cover shadow-md" />
+                    <h2 class="mb-1 text-2xl font-bold text-white">
+                        {{ playlistInfo.name }}
+                    </h2>
+                    <p class="text-sm text-gray-400">
+                        By
+                        <span class="font-medium text-green-500">
+                            {{ playlistInfo.owner.display_name }}
+                        </span>
+                    </p>
+                    <p class="mt-1 text-sm text-gray-400">{{ playlistInfo.tracks.total }} tracks</p>
+                    <p
+                        v-if="playlistInfo.description"
+                        class="mt-4 text-sm leading-relaxed text-gray-300">
+                        {{ playlistInfo.description }}
+                    </p>
+                </div>
+            </UCard>
+
             <div class="flex items-center justify-between">
                 <h2 class="text-lg font-medium">Tracks ({{ tracks.length }})</h2>
                 <UButton
@@ -175,11 +186,19 @@ async function copyAll() {
                     {{ copying ? "Copied!" : "Copy all" }}
                 </UButton>
             </div>
-            <ul class="list-disc space-y-1 pl-6">
+            <ul class="mt-4 space-y-1">
                 <li
-                    v-for="(t, idx) in tracks"
-                    :key="idx">
-                    {{ `${t.artist} - ${t.song}` }}
+                    v-for="(track, idx) in tracks"
+                    :key="idx"
+                    class="group flex items-center gap-3 text-gray-300 transition-colors duration-150 hover:text-white">
+                    <span class="w-6 text-right text-gray-500 group-hover:text-green-500">
+                        {{ idx + 1 }}
+                    </span>
+                    <span>
+                        <span class="text-gray-400">{{ track.artist }}</span>
+                        <span class="text-secondary px-2">-</span>
+                        <span class="text-main font-medium">{{ track.song }}</span>
+                    </span>
                 </li>
             </ul>
         </div>
