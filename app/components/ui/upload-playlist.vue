@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import type {PlaylistInfoResponse, PlaylistTracksResponse, TrackLine} from "#shared/utils/types";
+import type {
+    PlaylistInfoResponse,
+    PlaylistTracksResponse,
+    SpotifyPlaylistImage,
+    TrackLine
+} from "#shared/utils/types";
 import {SpotifyPlaylistSchema} from "#shared/utils/schemas";
 import {ref} from "vue";
 
@@ -13,17 +18,17 @@ const formState = reactive({
 const tracks = ref<TrackLine[]>([]);
 const playlistInfo = ref<PlaylistInfoResponse | null>(null);
 const copying = ref(false);
-const largestImage = ref<{height: number; url: string; width: number} | null>(null);
+const largestImage = ref<SpotifyPlaylistImage | null>(null);
 
 // Resets the form data to initial state.
 const resetFormData = () => {
     formState.spotifyPlaylist = "";
 };
 
-const getLargestImage = (
-    images: {height: number; url: string; width: number}[]
-): {height: number; url: string; width: number} => {
-    return images.reduce((max, img) => (img.height > max.height ? img : max));
+const getLargestImage = (images: SpotifyPlaylistImage[]): SpotifyPlaylistImage | null => {
+    if (!images || images.length === 0) return null;
+
+    return images.reduce((max, img) => ((img.height ?? 0) > (max.height ?? 0) ? img : max));
 };
 
 // Validate the playlist input using the shared schema directly
@@ -106,7 +111,7 @@ async function copyAll() {
                             v-model="formState.spotifyPlaylist"
                             placeholder="e.g. https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M"
                             class="w-full"
-                            required
+                            :required="true"
                             size="md" />
                     </UFormField>
                     <div class="flex items-center justify-end">
@@ -131,12 +136,6 @@ async function copyAll() {
                 </div>
             </UForm>
         </UCard>
-
-        <div
-            v-if="errorMsg"
-            class="text-sm text-red-600">
-            {{ errorMsg }}
-        </div>
         <!-- Songs -->
         <div
             v-if="tracks.length"
@@ -155,8 +154,8 @@ async function copyAll() {
                         v-if="largestImage"
                         :src="largestImage.url"
                         :alt="playlistInfo.name"
-                        :width="largestImage.width"
-                        :height="largestImage.height"
+                        :width="largestImage.width ?? 640"
+                        :height="largestImage.height ?? 640"
                         class="mb-4 rounded-4xl object-cover shadow-md" />
                     <h2 class="mb-1 text-2xl font-bold text-white">
                         {{ playlistInfo.name }}
@@ -164,7 +163,7 @@ async function copyAll() {
                     <p class="text-sm text-gray-400">
                         By
                         <span class="font-medium text-green-500">
-                            {{ playlistInfo.owner.display_name }}
+                            {{ playlistInfo.owner.display_name ?? "Unknown" }}
                         </span>
                     </p>
                     <p class="mt-1 text-sm text-gray-400">{{ playlistInfo.tracks.total }} tracks</p>

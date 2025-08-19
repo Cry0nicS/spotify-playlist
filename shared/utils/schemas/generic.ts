@@ -1,4 +1,4 @@
-import z from "zod";
+import * as z from "zod";
 
 export const EnvVarsSchema = z.object({
     NODE_ENV: z.preprocess(

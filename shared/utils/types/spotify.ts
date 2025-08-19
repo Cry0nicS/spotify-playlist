@@ -1,5 +1,5 @@
 import type {SpotifyAuthResponseSchema} from "#shared/utils/schemas";
-import type z from "zod";
+import type * as z from "zod";
 
 export type TrackLine = {
     artist: string;
@@ -23,13 +23,19 @@ export type SpotifyAuthResponse = z.infer<typeof SpotifyAuthResponseSchema>;
 export type PlaylistInfoResponse = {
     description: string;
     name: string;
-    owner: {display_name: string};
+    owner: {display_name: string | null};
     tracks: {
         total: number;
     };
-    images: [{height: number; width: number; url: string}];
+    images: SpotifyPlaylistImage[];
 };
 
 export type PlaylistTracksResponse = {
     tracks: TrackLine[];
+};
+
+export type SpotifyPlaylistImage = {
+    height: number | null;
+    url: string;
+    width: number | null;
 };

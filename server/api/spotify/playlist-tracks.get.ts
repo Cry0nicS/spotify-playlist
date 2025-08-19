@@ -6,7 +6,7 @@ import type {
 } from "#shared/utils/types";
 import {getEnvVars} from "#shared/utils/env-vars";
 import {SpotifyPlaylistIdSchema} from "#shared/utils/schemas";
-import z from "zod";
+import * as z from "zod";
 import {generateSpotifyToken} from "~~/server/utils/generate-spotify-token";
 
 export default defineEventHandler<Promise<PlaylistTracksResponse>>(async (event) => {

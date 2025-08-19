@@ -1,5 +1,5 @@
 import {SPOTIFY_PLAYLIST_ID_REGEX} from "#shared/utils/constants";
-import z from "zod";
+import * as z from "zod";
 
 /**
  * Schema for Spotify authentication response.
