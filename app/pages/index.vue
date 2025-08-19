@@ -1,5 +1,5 @@
 <template>
-    <main class="mx-auto max-w-xl space-y-8">
+    <main class="mx-auto max-w-[800px] space-y-8">
         <div class="py-16 text-center">
             <div
                 class="gradient-spotify pulse-music mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full">
