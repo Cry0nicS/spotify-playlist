@@ -25,9 +25,9 @@ export default defineEventHandler<Promise<PlaylistTracksResponse>>(async (event)
     }
 
     const {playlistId} = result.data;
-    const token = await generateSpotifyToken();
 
     try {
+        const token = await generateSpotifyToken();
         const fields = ["items(track(name,artists(name)))", "next"].join(",");
 
         const limit = 100;

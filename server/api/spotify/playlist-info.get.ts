@@ -18,9 +18,9 @@ export default defineEventHandler<Promise<PlaylistInfoResponse>>(async (event) =
     }
 
     const {playlistId} = result.data;
-    const token = await generateSpotifyToken();
 
     try {
+        const token = await generateSpotifyToken();
         const fields = [
             "description",
             "name",
