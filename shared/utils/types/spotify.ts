@@ -40,3 +40,8 @@ export type SpotifyPlaylistImage = {
     url: string;
     width: number | null;
 };
+
+export interface SpotifyErrorResponse {
+    status: number;
+    message: string;
+}
