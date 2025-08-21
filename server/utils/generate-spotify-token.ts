@@ -2,7 +2,7 @@ import type {SpotifyAuthResponse} from "#shared/utils/types";
 import {Buffer} from "node:buffer";
 import {getEnvVars} from "#shared/utils/env-vars";
 import {SpotifyAuthResponseSchema} from "#shared/utils/schemas";
-import {createApiError} from "~~/server/utils/error-helpers";
+import {createApiError, throwApiError} from "~~/server/utils/error-helpers";
 
 type CachedToken = {
     token: string;
@@ -31,7 +31,8 @@ export async function generateSpotifyToken(): Promise<string> {
         throwApiError({
             statusCode: 500,
             statusMessage: "MISSING_SPOTIFY_CREDENTIALS",
-            message: "Spotify client ID and secret must be set in environment variables.",
+            message:
+                "SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET must be configured on the server.",
             data: {
                 title: "An unexpected error occurred",
                 detail: "Please contact the administrator."

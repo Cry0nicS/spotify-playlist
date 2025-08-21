@@ -33,21 +33,20 @@ function getStatusCode(error: unknown): number {
  * Extract a best-effort user-friendly message from an unknown error.
  */
 export function getErrorMessage(error: unknown): string {
-    if (isErrorWithData(error)) {
-        if (isSpotifyErrorPayload(error.data)) {
-            return error.data.error.message;
-        }
-
-        if (isApiError(error)) {
-            return error.data?.title ?? error.message;
-        }
-
-        if (isErrorShape(error)) {
-            return error.message;
-        }
+    // Spotify error payload nested under `data`
+    if (isErrorWithData(error) && isSpotifyErrorPayload(error.data)) {
+        return error.data.error.message;
     }
-
-    return String(error);
+    // Our normalized ApiError (with or without data)
+    if (isApiError(error)) {
+        return error.data?.detail ?? error.message;
+    }
+    // Generic error/object with a message (includes native Error/H3)
+    if (isErrorShape(error)) {
+        return error.message;
+    }
+    // Last resort
+    return typeof error === "string" ? error : String(error);
 }
 
 /**

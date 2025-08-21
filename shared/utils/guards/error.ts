@@ -74,7 +74,7 @@ export function isApiErrorPayload(value: unknown): value is ApiErrorPayload {
  * Checks if the object has a 'data' property. Regardless of its shape.
  */
 export function isErrorWithData(e: unknown): e is {data: unknown} {
-    return typeof e === "object" && e !== null && "data" in e;
+    return typeof e === "object" && e !== null && Object.prototype.hasOwnProperty.call(e, "data");
 }
 
 /**

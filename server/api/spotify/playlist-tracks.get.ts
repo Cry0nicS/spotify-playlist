@@ -20,7 +20,7 @@ export default defineEventHandler<Promise<PlaylistTracksResponse>>(async (event)
 
     if (!result.success) {
         throwApiError({
-            statusCode: 409,
+            statusCode: 422,
             statusMessage: "VALIDATION_ERROR",
             message: z.prettifyError(result.error),
             data: {
