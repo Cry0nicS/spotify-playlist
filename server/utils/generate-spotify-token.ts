@@ -2,6 +2,7 @@ import type {SpotifyAuthResponse} from "#shared/utils/types";
 import {Buffer} from "node:buffer";
 import {getEnvVars} from "#shared/utils/env-vars";
 import {SpotifyAuthResponseSchema} from "#shared/utils/schemas";
+import {createApiError} from "~~/server/utils/error-helpers";
 
 type CachedToken = {
     token: string;
@@ -27,7 +28,15 @@ export async function generateSpotifyToken(): Promise<string> {
     const clientSecret = getEnvVars().SPOTIFY_CLIENT_SECRET;
 
     if (!clientId || !clientSecret) {
-        throw createError({statusCode: 500, statusMessage: "Missing Spotify client credentials"});
+        throwApiError({
+            statusCode: 500,
+            statusMessage: "MISSING_SPOTIFY_CREDENTIALS",
+            message: "Spotify client ID and secret must be set in environment variables.",
+            data: {
+                title: "An unexpected error occurred",
+                detail: "Please contact the administrator."
+            }
+        });
     }
 
     const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
@@ -53,9 +62,8 @@ export async function generateSpotifyToken(): Promise<string> {
 
         return cache.token;
     } catch (error) {
-        throw createError({
-            statusCode: 500,
-            statusMessage: `Error generating Spotify token: ${error instanceof Error ? error.message : String(error)}`
-        });
+        throwApiError(
+            createApiError(error, "Spotify token generation", "Failed to generate Spotify token")
+        );
     }
 }

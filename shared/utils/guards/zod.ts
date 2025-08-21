@@ -6,6 +6,6 @@ export function isZodIssue(value: unknown): value is z.core.$ZodIssue {
     return typeof v.message === "string" && typeof v.code === "string" && Array.isArray(v.path);
 }
 
-export function isZodIssueArray(value: unknown): value is z.core.$ZodIssue[] {
+export function isZodIssueArray(value: unknown): value is z.ZodIssue {
     return Array.isArray(value) && value.every(isZodIssue);
 }

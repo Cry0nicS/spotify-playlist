@@ -11,7 +11,7 @@ import {isZodIssueArray} from "#shared/utils/guards/zod";
  *   statusCode?: number;
  * }
  */
-export function isErrorPayload(
+export function isErrorShape(
     value: unknown
 ): value is {message: string; statusMessage?: string; statusCode?: number} {
     if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
@@ -25,6 +25,16 @@ export function isErrorPayload(
     return !(statusCode !== undefined && typeof statusCode !== "number");
 }
 
+/**
+ * Checks if the error object matches the API error shape.
+ * Shape:
+ * {
+ *   message: string;
+ *   statusMessage?: string;
+ *   statusCode?: number;
+ *   data?: ApiErrorPayload;
+ * }
+ */
 export function isApiError(error: unknown): error is ApiError {
     if (typeof error !== "object" || error === null) return false;
 
@@ -61,18 +71,31 @@ export function isApiErrorPayload(value: unknown): value is ApiErrorPayload {
 }
 
 /**
- * Checks if the object has a 'data' property.
+ * Checks if the object has a 'data' property. Regardless of its shape.
  */
 export function isErrorWithData(e: unknown): e is {data: unknown} {
     return typeof e === "object" && e !== null && "data" in e;
 }
 
+/**
+ * Checks if the object matches the Spotify-error expected shape.
+ * Shape:
+ * {
+ *   error: {
+ *    status: number;
+ *    message: string;
+ *   }
+ * }
+ */
 export function isSpotifyErrorPayload(value: unknown): value is SpotifyErrorResponse {
     if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
 
-    const {status, message} = value as Record<string, unknown>;
+    const root = value as Record<string, unknown>;
+    const error = root.error;
 
-    if (typeof message !== "string") return false;
+    if (typeof error !== "object" || error === null || Array.isArray(error)) return false;
 
-    return !(status !== undefined && typeof status !== "number");
+    const {status, message} = error as Record<string, unknown>;
+
+    return typeof status === "number" && typeof message === "string";
 }

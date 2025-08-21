@@ -2,7 +2,7 @@ import type {PlaylistInfoResponse} from "#shared/utils/types";
 import {getEnvVars} from "#shared/utils/env-vars";
 import {SpotifyPlaylistIdSchema} from "#shared/utils/schemas";
 import * as z from "zod";
-import {throwApiError, throwSpotifyError} from "~~/server/utils/error-helpers";
+import {createApiError, throwApiError} from "~~/server/utils/error-helpers";
 import {generateSpotifyToken} from "~~/server/utils/generate-spotify-token";
 
 export default defineEventHandler<Promise<PlaylistInfoResponse>>(async (event) => {
@@ -12,12 +12,12 @@ export default defineEventHandler<Promise<PlaylistInfoResponse>>(async (event) =
     const result = SpotifyPlaylistIdSchema.safeParse(getQuery(event));
 
     if (!result.success) {
-        throw throwApiError({
+        throwApiError({
             statusCode: 409,
             statusMessage: "VALIDATION_ERROR",
             message: z.prettifyError(result.error),
             data: {
-                title: "Data validation error",
+                title: "Input validation error",
                 detail: "Please check the provided data.",
                 zodIssue: result.error.issues
             }
@@ -46,6 +46,8 @@ export default defineEventHandler<Promise<PlaylistInfoResponse>>(async (event) =
             }
         });
     } catch (error) {
-        throw throwSpotifyError(error);
+        throwApiError(
+            createApiError(error, "Spotify playlist info", "Failed to fetch playlist info")
+        );
     }
 });
